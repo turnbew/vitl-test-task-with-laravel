@@ -4,6 +4,8 @@
 
 	interface  _InterfaceQuery
 	{
+		public static function getInstance();
+		
 		public static function countAll();
 		
 		public static function get($id, $offset, $limit);

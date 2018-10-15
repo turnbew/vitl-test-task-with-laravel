@@ -8,20 +8,39 @@
 	class NamesQuery implements _InterfaceQuery
 	{
 
-		protected static $_names_table = 'vitl_names'; 
+		private static $_table_names; 
+		private static $_table_prefix_names;
+		private static $_instance;
+
+		
+		private function __construct()
+		{
+			self::$_table_names = 'names';
+			self::$_table_prefix_names = \DB::getTablePrefix() . 'names';
+		}
 
 		
 		
+		public static function getInstance()
+		{
+			if ( is_null( self::$_instance ) ) {
+			  self::$_instance = new self();
+			}
+			return self::$_instance;
+		}
+  
+  
+		
 		public static function countAll() 
 		{
-			return DB::table('vitl_names')->count();
+			return DB::table(self::$_table_names)->count();
 		}
 		
 		
 		
 		public static function get($id = 0, $offset = 0, $limit = 25) 
 		{
-			$query =  DB::table(self::$_names_table);
+			$query =  DB::table(self::$_table_names);
 			
 			if ( $id > 0 ) {
 				$query->where('id', $id);
@@ -40,12 +59,12 @@
 		public static function getSearchResult($name_part, $filter_duplicates, $just_count = false, $offset = 0, $limit = 25) 
 		{	
 			if ($filter_duplicates == 0) {
-				$sql = "SELECT n.* FROM " . self::$_names_table . " AS n " .
+				$sql = "SELECT n.* FROM " . self::$_table_prefix_names . " AS n " .
 					"WHERE CONCAT(n.first_name, ' ', n.last_name) LIKE '%" . $name_part . "%' ";
 			}
 			else {
 				$sql = "SELECT CONCAT(n.first_name,' ',n.last_name) AS full_name, n.* " . 
-					"FROM " . self::$_names_table . " AS n " .
+					"FROM " . self::$_table_prefix_names . " AS n " .
 					"WHERE CONCAT(n.first_name,' ',n.last_name) LIKE '%" . $name_part . "%' " .
 					"GROUP BY full_name ";
 			}

@@ -14,9 +14,9 @@
 						'search_value' : $('input[name="search_value"]').val(), 
 						'duplicates' : $('select[name="duplicates"]').val(),
 					}
-					
+					$('div.hits-container').fadeTo('slow', 0.5);
 					AJAX.call('/names/search', data, function(response) {
-						$('div.hits-container').html(response);
+						$('div.hits-container').html(response).fadeTo('slow', 1);
 					})				
 				}, 500);
 			})
@@ -33,9 +33,9 @@
 				'duplicates' : $('select[name="duplicates"]').val(),
 				'page' : $this.data('page'),
 			}
-
+			$('div.hits-container').fadeTo('slow', 0.5);
 			AJAX.call('/names/search', data, function(response) {
-				$('div.hits-container').html(response);
+				$('div.hits-container').html(response).fadeTo('slow', 1);
 			})				
 		})
 

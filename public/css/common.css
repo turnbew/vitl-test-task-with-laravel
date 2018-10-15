@@ -87,31 +87,13 @@ div.form-container {
 }
 
 
-
-div.hits-container {
-	margin-top: 50px;
-}
-div.hits-container div.records {
-	clear: both; 
-	display: block; 
-	max-width:600px;
-	padding: 0px; 
-	margin-left: auto; 
-	margin-right: auto;
-	margin-bottom: 40px; 
-	border-top: solid 2px #eee;
-	border-bottom: solid 2px #eee;
-}
-div.hits-container div.records table {
-	display: table; 
-	width: 100%; 
-	margin: 0px;
-}
-div.hits-container div.records table td {
-	text-align: left;
-}
-
-
 .no-line-break {
 	white-space: nowrap;
+}
+
+div.clear {
+	display: block;
+	clear: both;
+	min-height: 20px;
+	width: 100%;
 }

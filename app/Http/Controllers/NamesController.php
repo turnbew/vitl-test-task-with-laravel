@@ -5,6 +5,7 @@
 	
 	use App\Http\Controllers\Validator\NamesValidator;
 	use App\Http\Controllers\Query\NamesQuery;
+	use App\Http\Controllers\Common\Pagination;
 	use App\Http\Controllers\Controller;
 	use Illuminate\Http\Request;
 	use Illuminate\Support\Facades\Redirect;
@@ -17,26 +18,28 @@
 		/**
 		 * Listing all names
 		 * @input: 
-		 *		$page: int - selected page
+		 *		$page: int - selected page - default is 1
+		 *		$limit: int - number of records on one page - default is 25
 		 * @return 
 		 *		all names page's View
 		 */
 		public function all($page = 1, $limit = 25) 
 		{	
-			$data = array();
-			$data['pagination']['all_records'] = NamesQuery::countAll();
-			$data['pagination']['pages'] = ceil($data['pagination']['all_records'] / $limit);
-			$data['pagination']['page'] = $page;
-			$data['pagination']['limit'] = $limit;
-			$data['pagination']['page_url'] = 'names/all';
-			$data['pagination']['offset'] = ($page - 1) * $limit;
-			$data['pagination']['type'] = 'php';
-			$data['names'] = NamesQuery::get(0, $data['pagination']['offset'], $limit);
-						
-			$hit_list =View('pages/names/hit-list')->with('data', $data);
+			//Count all records
+			$all_records = NamesQuery::getInstance()->countAll();
+			
+			//Setting data for pagination
+			$pagination = Pagination::set($all_records, $base_uri = 'names/all', $page, $limit);
+			
+			//Getting all names from db
+			$names = NamesQuery::getInstance()->get(0, $pagination['offset'], $limit);
+			
+			//Creating hit list 
+			$hit_list = View('pages/names/partials/hit-list')->with('data', array('pagination' => $pagination, 'names' => $names));
 
+			//Generating the view
 			return View('pages/names/all')->with('hit_list', $hit_list);
-		}
+		}//END function all
 
 		
 		
@@ -66,7 +69,7 @@
 			}
 			
 			return View('pages/names/add');
-		}
+		}//END function add
 
 		
 		
@@ -79,25 +82,30 @@
 		 */
 		public function search(Request $request) 
 		{ 				
+			//Getting posted data
 			$post = $request->post();
-			$data = array();
-			$limit = 10; 
-			$page = isset($post['page']) ? $post['page'] : 1;
 			
-			if ( isset($post['search_value']) and strlen($post['search_value']) > 0 ) {
-				$data['pagination']['all_records'] = NamesQuery::getSearchResult($post['search_value'], $post['duplicates'], true);
-				$data['pagination']['pages'] = ceil($data['pagination']['all_records'] / $limit);
-				$data['pagination']['page'] = $page;
-				$data['pagination']['limit'] = $limit;
-				$data['pagination']['offset'] = ($page - 1) * $limit;
-				$data['pagination']['page_url'] = 'names/search';
-				$data['pagination']['type'] = 'ajax'; 
+			//Init
+			$names = $pagination = array();
+
+			//Getting seaarch result
+			if ( isset($post['search_value']) and strlen($post['search_value']) > 0 ) {	
+				$limit = 25; 
+				$page = isset($post['page']) ? $post['page'] : 1;
+			
+				#Counting records of search result
+				$all_records = NamesQuery::getInstance()->getSearchResult($post['search_value'], $post['duplicates'], true);
 				
-				$data['names'] = NamesQuery::getSearchResult($post['search_value'], $post['duplicates'], false, $data['pagination']['offset'], $limit);
+				#Setting pagination
+				$pagination = Pagination::set($all_records, $base_uri = 'names/search', $page, $limit, 'ajax');
+				
+				#Getting records of search result
+				$names = NamesQuery::getInstance()->getSearchResult($post['search_value'], $post['duplicates'], false, $pagination['offset'], $limit);
 			}
 
-			echo ( isset($data['names']) and count($data['names']) > 0 ) ? View('pages/names/hit-list')->with('data', $data) : "";
-		}		
+			//Echo view of search result
+			echo View('pages/names/partials/hit-list')->with('data', array('names' => $names, 'pagination' => $pagination));
+		}//END function search		
 		
 		
 	}//END class NamesController

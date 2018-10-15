@@ -1,0 +1,16 @@
+
+div.hits-container {
+	margin-top: 50px;
+}
+div.hits-container div.hit_details p {
+	clear: both; 
+	width: 100%; 
+	text-align: center;
+}
+div.hits-container div.hitlist {
+	display: block; 
+	padding: 0px; 
+	margin-bottom: 20px; 
+	border-top: solid 2px #eee;
+	border-bottom: solid 2px #eee;
+}

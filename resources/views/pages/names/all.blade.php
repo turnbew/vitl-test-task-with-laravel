@@ -22,6 +22,8 @@
 				
 			<!-- Beginning of listing hits -->
 			
+			<div class="clear"></div>
+			
 			<div class="hits-container">
 				{!! $hit_list !!}
 			</div>
